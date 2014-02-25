@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+	
+	<head>
+		<meta charset='utf-8'>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'>
+		
+		<title>Mobile Test</title>
+		
+		<script src='js/jquery/jquery-1.9.1.min.js'></script>
+		<script src='js/browser.js'></script>
+		<!-- <script src='js/jquery/jquery-2.0.3.min.js'></script> -->
+		<!-- <script src='js/core.js'></script> -->
+		
+		<!-- <link rel='stylesheet' href='css/core.css'> -->
+		
+		<style>
+		
+			body,html {
+				width: 100%;
+				height: 100%;
+				margin: 0px;
+				padding: 0px;
+				background-color: black;
+			}
+			
+			#content {
+				width: 320px;
+				height: 100%;
+				background-color: green;
+				position: absolute;
+			}
+			
+			#test {
+				background-color: black;
+				width: 100px;
+				height: 30px;
+				color: white;
+				position: absolute;
+				z-index: 2;
+			}
+			
+			#content-bg {
+				width: 50%;
+				height: inherit;
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				background-color: pink;
+			}
+			
+			@media screen and (orientation: landscape) {
+				#content {
+					/*background-color: red;*/
+					-webkit-transform:rotateZ(90deg);
+					/*-webkit-transform-origin:50% 50%;*/
+					/*-webkit-transform-origin: left center;*/
+					-webkit-transform-origin: left top;
+					/*left: 120px;
+					top: -90px;*/
+					/*left: auto;
+					top: auto;
+					bottom: 0px;
+					right: 0px;*/
+					left: auto;
+					top: 0px;
+					right: -50%;
+					margin-right: -40px;
+					height: 100%;
+					
+				}
+			}
+			
+			@media screen and (orientation: portrait) {
+				#content {
+					background-color: green;
+					left: 0px;
+					top: 0px;
+				}
+			}
+			
+			#console {
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				width: 100%;
+				height: 500%;
+				background-color: white;
+				color: black;
+				font-size: 10px;
+				font-family: Helvetica;
+				z-index: 10;
+				display: none;
+			}
+			
+		</style>
+	</head>
+	
+	<body>
+		<div id='content'>
+			<div id='content-bg'></div>
+			<div id='test'>test</div>
+		</div>
+		<div id='console'></div>
+		<script>
+			var browser = new Browser();
+			
+			$( '#test' ).click( function(e ) {
+				alert( 'hi' );
+			});
+			
+			$content = document.getElementById( 'test' );
+			$console = document.getElementById( 'console' );
+			
+			var h = '';
+			for ( key in window.screen ) {
+				h += key + '; ' + window.screen[key] + ' | '; 
+			}
+			
+			
+			$content.innerHTML = h;
+			
+			$( '#content' ).height( window.screen.height );
+			
+			browser.onOrientationChange = function() {
+				var h = '';
+				for ( key in window.screen ) {
+					h += key + ': ' + window.screen[key] + '<br />'; 
+				}
+				
+				
+				$content.innerHTML = h;
+			};
+			
+			/*Touch = function() {
+				return { hello: 'hello' };
+			};*/
+			
+			
+			
+			/*var Touch2 = function(){};
+				Touch2.prototype = new Touch();*/
+			
+			/*window.TouchOld = Touch;
+			
+			window.Touch = function() {
+				 this = new TouchOld();
+			};*/
+			
+			
+			
+			var createTouch = function( x, y, target ) {
+				// Touch( ?, target, identifier, x, y, screenX, screenY )
+				//var t = new Touch( window, $console, 999, 222, 333, 444, 555 );
+				var t = new Touch( true, target, 2085576337, x, y, x, y, true, true );
+					t.screenX = t.clientX = t.pageX = t.x = x;
+					t.screenY = t.clientY = t.pageY = t.y = y;
+					t.target = target;
+					
+					//t.identifier = 93948492;
+					
+					t.update = function( x, y ) {
+						touch = createTouch( x, y, this.target );
+						//return;
+						//touch = new Touch( window, target, 93948492, x, y, x, y );
+						//this.__proto__( window, target, 93948492, x, y, x, y );
+						//this.x = x;
+						//this.y = y;
+						this.screenX = this.clientX = this.pageX = this.x = x;
+						this.screenY = this.clientY = this.pageY = this.y = y;
+					};
+				return t;
+			};
+			
+			var createTouchEvent = function( type, x, y, target, touch, touchList ) {
+				var event = document.createEvent( 'TouchEvent' );
+					//event.initTouchEvent( type );
+					event._type = type;
+					event.scale = 1;
+					event.rotation = 0;
+					//$console.innerHTML = event.pageX;
+					event.pageX = 99;
+					//$console.innerHTML = event._type;
+					event.pageY = event.layerY = event.y = y;
+					
+					//event.target
+					
+					event.eventPhase = 3;
+					
+					event.target = event.srcElement = target;
+					
+					event.currentTarget = event.view = window;
+					
+					event.touch = touch;
+					event.targetTouches = event.changedTouches = event.touches = touchList;
+				
+				//document.dispatchEvent( event );
+					event.preventDefault();
+					event.init = function( x, y ) {
+						//function initTouchEvent(type, canBubble, cancelable, view, detail, screenX, screenY, clientX, clientY, ctrlKey, altKey, shiftKey, metaKey, touches, targetTouches, changedTouches, scale, rotation);
+						this.initTouchEvent( this._type, true, true, window, 0, x, y, x, y, false, false, false, false, touchList, touchList, touchList, 1, 0 );
+						//this.pageX = this.layerX = this.x = x;
+						//this.pageY = this.layerY = this.y = y;
+					};
+					
+					
+					event.dispatch = function() {
+						this.init( this.touch.x, this.touch.y );
+						
+						//window.dispatchEvent( this );
+						window.dispatchEvent( this );
+						document.dispatchEvent( this );
+						$console.dispatchEvent( this );
+						//$console.innerHTML = this + ':' + Math.random();
+						//window.ontouchmove( this );
+						//$console.innerHTML = event.pageX;
+						
+					};
+				
+				return event;
+			};
+			
+			//touch = createTouch( 250, 345, $console );
+			//OriginalTouch = Touch;
+			
+			/*Touch = function() {
+				this.x = 0;
+				this.y = 0;
+				this.identifier = 2085576148;
+				
+				this.target = $console;
+				
+				this.clientX = 0;
+				this.clientY = 0;
+				
+				this.pageX = 0;
+				this.pageY = 0;
+				
+				this.screenX = 0;
+				this.screenY = 0;
+				
+				this.update = function( x, y ) {
+					//this.screenX = this.clientX = this.pageX = this.x = x;
+					//this.screenY = this.clientY = this.pageY = this.y = y;
+				};
+			};*/
+			
+			//Touch.prototype = OriginalTouch.prototype;
+			
+			//touch = new Touch();
+			//touch = createTouch( 200, 320, $console );
+			/*touch.update = function( x, y ) {
+					this.screenX = this.clientX = this.pageX = this.x = x;
+					this.screenY = this.clientY = this.pageY = this.y = y;
+				};*/
+			//touchList = document.createTouchList( touch );
+			
+			var touchEvents = [];
+			//$console.innerHTML = 'hi';
+			
+			/*setTimeout( function() {
+						var te = createTouchEvent( 'touchstart', touch.x, touch.y, $console, touch, touchList );
+						te.dispatch();
+						window.focus();
+						touch.update( touch.x, touch.y - 1 );
+					}, ( 0 ) );
+					
+			for ( var i = 0, len = 30; i < len; i++ ) {
+				
+				
+				//te.dispatch();
+				
+				
+					setTimeout( function() {
+						var te = createTouchEvent( 'touchmove', touch.x, touch.y, $console, touch, touchList );
+						te.dispatch();
+						
+						touch.update( touch.x, touch.y - 1 );
+					}, ( ( i + 1 ) * 50 ) );
+				
+			};*/
+			
+			var touchValues = [];
+			var touchVal = function( x, y ) {
+				this.x = x;
+				this.y = y;
+			};
+			for ( var i = 0, len = 50; i < len; i++ ) {
+				if ( i < 20 ) {
+					touchValues.push( new touchVal( 200, 200 - i ) );
+				} else {
+					touchValues.push( new touchVal( 200, 200 - 20 ) );
+				}
+			}
+			
+			//if ( Touch == undefined ) Touch = function(){};
+			
+			touch = new Touch( true, window, 2085576337, 200, 200, 200, 200, true, true );
+			touchList = document.createTouchList( touch );
+			
+			window.focus();
+			
+			var fire = function() {
+				//$console.innerHTML = this;
+				var te = document.createEvent( 'TouchEvent' );
+				if ( this == 0 ) te.initTouchEvent( 'touchstart', true, true, window, 1, touch.x, touch.y, touch.x, touch.y, false, false, false, false, touchList, touchList, touchList, 1, 0 );
+				else te.initTouchEvent( 'touchmove', true, true, window, 1, touch.x, touch.y, touch.x, touch.y, false, false, false, false, touchList, touchList, touchList, 1, 0 );
+				//te.initUIEvent( 'click', true, true, window, 1, touch.x, touch.y, touch.x, touch.y, false, false, false, false, touchList, touchList, touchList, 1, 0 );
+				window.dispatchEvent( te );
+				//$content.dispatchEvent( te );
+				//document.dispatchEvent( te );
+				
+				touch = new Touch( true, $console, 2085576337, touchValues[this].x, touchValues[this].y, touchValues[this].x, touchValues[this].y, true, true );
+				touchList = document.createTouchList( touch );
+				
+				//window.scroll( 0, this );
+			};
+			
+			var fireEvents = function() {
+				for ( var i = 0, len = 50; i < len; i++ ) {
+					
+					//var te = document.createEvent( 'TouchEvent' );
+					//te.initTouchEvent( 'touchmove', true, true, window, 0, touch.x, touch.y, touch.x, touch.y, false, false, false, false, touchList, touchList, touchList, 1, 0 );
+					//window.dispatchEvent( te );
+					//touch = new Touch( true, $console, 2085576337, touchValues[i].x, touchValues[i].y, touchValues[i].x, touchValues[i].y, true, true );
+					//touchList = document.createTouchList( touch );
+					
+					setTimeout( fire.bind( i ), 1000 + ( i * 20 ) );
+				}
+			};
+			
+			fireEvents();
+			//$console.innerHTML = 'wtf';
+			var first = true;
+			var v = 0;
+			/*window.addEventListener( 'touchmove', function( e ) {
+				//e.preventDefault();
+				//e.prevent
+				//$console.innerHTML = e;
+				//$console.innerHTML = 'touchmove: ' + Math.random();
+				//return;
+				//$console.innerHTML = 'touchmove: ' + Math.random();
+				//$console.innerHTML = e;
+				h = '';
+				for ( key in e ) {
+					h += key + ': ' + e[key] + '<br />';
+				}
+				$console.innerHTML = h;
+				/*var h = e;
+				h += '<br />';
+				
+				h += 'TOUCH<br />';
+				for ( key in e[ 'touches' ][0] ) {
+					h += key + ': ' + e[ 'touches' ][0][key] + '<br />';
+				}
+				h += '<br />';
+				h += 'CHANGED TOUCHES<br />';
+				for ( key in e[ 'changedTouches' ][0] ) {
+					h += key + ': ' + e[ 'changedTouches' ][0][key] + '<br />';
+				}
+				h += '<br />';
+				h += 'TARGET TOUCHES<br />';
+				for ( key in e[ 'targetTouches' ][0] ) {
+					h += key + ': ' + e[ 'targetTouches' ][0][key] + '<br />';
+				}
+				
+				h += '<br />';
+				h += 'EVENT<br />';
+				//event.metaKey = null;
+				for ( key in e ) {
+					h += key + ': ' + e[key] + '<br />';
+				}
+				$console.innerHTML = h;
+				//$console.innerHTML = typeof e[ 'touches' ][0].identifier;
+				return;
+			}, false );*/
+			
+			if ( false ) {
+				readEvent = function( e ) {
+					//$console.innerHTML = $console.innerHTML + '<br />' + e.type;
+					$console.innerHTML = e.type;
+					//$console.innerHTML = e;
+				};
+				
+				$console.innerHTML = 'wtf';
+				for ( key in window ) {
+					if ( key.substr( 0, 2 ) == 'on' ) {
+						
+						if ( key != 'ontouchmove' && key != 'ontouchstart' ) window[ key ] = readEvent;
+						//window[ key ] = readEvent;
+					}
+					//$console.innerHTML = key;
+				}
+			}
+			
+			
+			//window.scrollTo( 0, 50 );
+			
+			if ( true ) {
+			
+			window.ontouchstart = function( e ) {
+				//fireEvents();
+			};
+			
+			window.ondrag = function(e ) {
+				$console.innerHTML = e;
+			};
+			
+			
+			//return;
+			window.ontouchmove = function( e ) {
+				
+				//$content.innerHTML = 'touchmove';
+				//$content.innerHTML = e;
+				/*var t = new Touch();
+				for ( key in t ) {
+					h += key + ': ' + t[key] + '<br />';
+				}*/
+				
+				
+				
+				/*var tl = document.createTouchList( new Touch());
+				var h = '';
+				for ( key in tl ) {
+					h += key + ': ' +tl[key] + '<br />';
+				}
+				$console.innerHTML = h;
+				return;
+				
+				var h = '';*/
+				
+				/*var t = new Touch();
+				for ( key in t ) {
+					h += key + ': ' + t[key] + '<br />';
+				}*/
+				var h = e;
+				h += '<br />';
+				//var event = document.createEvent( 'TouchEvent' );
+				var event = e;
+				
+				
+				//event.initTouchEvent( 'touchmove', true, true );
+				//var t = new Touch();
+				/*for ( key in event ) {
+					h += key + ': ' + event[key] + '<br />';
+				}
+				
+				$console.innerHTML = h;
+				return;
+				
+				var h = e + '<br /><br />';
+				
+				for ( key in e ) {
+					h += key + ': ' + e[key] + '<br />';
+				}
+				$console.innerHTML = h;
+				return;*/
+				
+				/*for ( key in e[ 'targetTouches' ][0] ) {
+					h += key + ': ' + e[ 'targetTouches' ][0][key] + '<br />';
+				}*/
+				/*for ( key in e[ 'changedTouches' ][0] ) {
+					h += key + ': ' + e[ 'changedTouches' ][0][key] + '<br />';
+				}*/
+				/*for ( key in e[ 'touches' ] ) {
+					h += key + ': ' + e[ 'touches' ][key] + '<br />';
+				}*/
+				//h = e[ 'touches' ][0];
+				h += 'TOUCH<br />';
+				for ( key in e[ 'touches' ][0] ) {
+					h += key + ': ' + e[ 'touches' ][0][key] + '<br />';
+				}
+				h += '<br />';
+				h += 'CHANGED TOUCHES<br />';
+				for ( key in e[ 'changedTouches' ][0] ) {
+					h += key + ': ' + e[ 'changedTouches' ][0][key] + '<br />';
+				}
+				h += '<br />';
+				h += 'TARGET TOUCHES<br />';
+				for ( key in e[ 'targetTouches' ][0] ) {
+					h += key + ': ' + e[ 'targetTouches' ][0][key] + '<br />';
+				}
+				
+				h += '<br />';
+				h += 'EVENT<br />';
+				//event.metaKey = null;
+				for ( key in event ) {
+					h += key + ': ' + event[key] + '<br />';
+				}
+				$console.innerHTML = h;
+				//$console.innerHTML = typeof e[ 'touches' ][0].identifier;
+				return;
+				
+				for ( key in e ) {
+					h += key + ': ' + e[key] + '<br />';
+				}
+				
+				return;
+				for ( key in e ) {
+					h += key + ': ' + e[key] + '<br />';
+					
+					/*if ( typeof e[key] != 'object' ) h += key + ': ' + e[key] + '<br />';
+					else {
+						//for ( item in e[key] ) h += key + '.' + item + ': ' + e[key][item] + '<br />';
+					} */
+				}
+				
+				
+				
+				
+				$console.innerHTML = h;
+			};
+			
+			}
+			
+		</script>
+	</body>
+	
+</html>
