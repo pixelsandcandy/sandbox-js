@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8' />
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1">
+        
+        <title>Sandbox - CSS / Retina Test</title>
+        
+        <style>
+        	body, html {
+        		
+        	margin: 0px;
+        	padding: 0px;
+        	}
+        	#background {
+        		position: absolute;
+        		left: 0px;
+        		top: 0px;
+        		width: 320px;
+        		height: 480px;
+        		background-repeat: no-repeat;
+        		
+        		background-position: -66px -62px;
+        		background-image: url( 'background.jpg' );
+        	}
+        	
+        	@media 
+				(-webkit-min-device-pixel-ratio: 2), 
+				(min-resolution: 192dpi) { 
+					#background {
+						/*background-position: -66px -581px;*/
+						background-position: -33px -290px;
+						background-image: url( 'background.jpg' );
+						-webkit-background-size: 400px 800px;
+						background-color: green;
+					}
+        </style>
+    </head>
+    
+    <body>
+    	<div id='background'></div>
+    </body>
+</html>
+
